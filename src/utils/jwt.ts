@@ -1,4 +1,6 @@
+import createHttpError from 'http-errors'
 import jwt from 'jsonwebtoken'
+import UserModel from '../models/usersSchema'
 import { IUserDoc } from '../types/userInterface'
 
 const { ACCESS_TOKEN_SECRET: ATS, REFRESH_TOKEN_SECRET: RTS} = process.env as { ACCESS_TOKEN_SECRET: string, REFRESH_TOKEN_SECRET: string}
@@ -33,3 +35,17 @@ jwt.verify(token, secret, (err, payload) => {
     if (err) return reject(err)
     resolve(payload as IPayload)
 }))
+
+export const verifyRefreshTokenAndGenerateNewTokens = async (token: string) => {
+    try {
+        const { _id } = await verifyJwtToken(token, RTS)
+        if (!_id) throw createHttpError(401, 'Invalid Details')
+        const user = await UserModel.findById(_id)
+        if (!user) throw createHttpError(404, 'User not found')
+        const { accessToken, refreshToken } = await createNewTokens(user)
+        return { accessToken, refreshToken }
+    } catch (error) {
+        console.log(error)
+        throw createHttpError(401, 'Invalid Details')
+    }
+}

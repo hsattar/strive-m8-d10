@@ -2,7 +2,7 @@ import { Router, RequestHandler } from 'express'
 import createHttpError from 'http-errors'
 import UserModel from '../models/usersSchema'
 import { IUserDoc } from '../types/userInterface'
-import { createNewTokens } from '../utils/jwt'
+import { createNewTokens, verifyRefreshTokenAndGenerateNewTokens } from '../utils/jwt'
 
 const userRouter = Router()
 
@@ -35,6 +35,28 @@ userRouter.post('/login', async (req, res, next) => {
             sameSite: "strict",
         })
         res.send('Tokens Sent')
+    } catch (error) {
+        console.log(error)
+        next(error)
+    }
+})
+
+userRouter.post('/refresh-token', async (req, res, next) => {
+    try {
+        const { refreshToken: oldRefreshToken } = req.cookies
+        if (!oldRefreshToken) return next(createHttpError(401, 'No token provided'))
+        const { accessToken, refreshToken } = await verifyRefreshTokenAndGenerateNewTokens(oldRefreshToken)
+        res.cookie("accessToken", accessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production" ? true : false,
+            sameSite: "strict",
+        })
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production" ? true : false,
+            sameSite: "strict",
+        })
+        res.send('Tokens Updated')
     } catch (error) {
         console.log(error)
         next(error)

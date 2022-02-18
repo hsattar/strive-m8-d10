@@ -51,7 +51,7 @@ describe('Testing all the user routes', () => {
     })
 
     it('should get all the accomodations listed', async () => {
-        const response = await request.get('/accomodations')
+        const response = await request.get('/houses')
         expect(response.status).toBe(200)
     })
 
