@@ -43,16 +43,56 @@ describe('Testing all the user routes', () => {
         refreshToken: ''
     }
 
+    const validHouseRequest = {
+        name: "Test",
+        host: "",
+        description: "Some random description",
+        maxGuests: 2
+    }
+
+    const editedHouseDetails = {
+        name: "Edited",
+        maxGuests: 5
+    }
+
+    let houseId: string
+
     it('Should create a new user with a hashed password but not returned', async () => {
         const response = await request.post('/users').send(validUserRegistration)
         expect(response.status).toBe(201)
         expect(response.body._id).toBeDefined()
         expect(response.body.password).not.toBeDefined()
+        validHouseRequest.host = response.body._id
     })
 
-    it('should get all the accomodations listed', async () => {
+    it('should get all the houses listed', async () => {
         const response = await request.get('/houses')
         expect(response.status).toBe(200)
+    })
+
+    it('should add a new house', async () => {
+        const response = await request.post('/houses').send(validHouseRequest)
+        expect(response.status).toBe(201)
+        expect(response.body._id).toBeDefined()
+        houseId = response.body._id
+    })
+
+    it('should be able to get a specific house', async () => {
+        const response = await request.get(`/houses/${houseId}`)
+        expect(response.status).toBe(200)
+        expect(response.body._id).toBe(houseId)
+    })
+
+    it('should be able to edit the house details', async () => {
+        const response = await request.put(`/houses/${houseId}`).send(editedHouseDetails)
+        expect(response.status).toBe(200)
+        expect(response.body.name).not.toBe(validHouseRequest.name)
+        expect(response.body.maxGuests).not.toBe(validHouseRequest.maxGuests)
+    })
+
+    it('should be able to delete a house', async () => {
+        const response = await request.delete(`/houses/${houseId}`)
+        expect(response.status).toBe(204)
     })
 
 })

@@ -18,7 +18,7 @@ accomodationRouter.route('/')
     try {
         const house = new HouseModal(req.body)
         await house.save()
-        res.send(house)
+        res.status(201).send(house)
     } catch (error) {
         console.log(error)
         next(error)

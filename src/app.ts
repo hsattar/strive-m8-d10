@@ -14,8 +14,8 @@ app.use(cookieParser())
 app.use(express.json())
 
 app.use('/users', userRouter)
-app.use('/me', authenticateUser, meRouter)
-app.use('/houses', authenticateUser, accomodationRouter)
+app.use('/me', meRouter)
+app.use('/houses', accomodationRouter)
 
 app.use(errorHandlers)
 
