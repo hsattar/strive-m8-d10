@@ -5,7 +5,7 @@ const { ACCESS_TOKEN_SECRET: ATS, REFRESH_TOKEN_SECRET: RTS} = process.env as { 
 
 // if (!ATS || !RTS) throw new Error('Add Environment Variables')
 
-interface IPayload {
+export interface IPayload {
     _id: string
 }
 
@@ -28,7 +28,7 @@ jwt.sign(payload, secret, { expiresIn }, (err, token) => {
     resolve(token as string)
 }))
 
-const verifyJwtToken = (token: string, secret: string): Promise<IPayload> => new Promise((resolve, reject) =>
+export const verifyJwtToken = (token: string, secret: string): Promise<IPayload> => new Promise((resolve, reject) =>
 jwt.verify(token, secret, (err, payload) => {
     if (err) return reject(err)
     resolve(payload as IPayload)
