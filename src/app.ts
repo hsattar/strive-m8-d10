@@ -5,6 +5,7 @@ import userRouter from "./routes/users"
 import accomodationRouter from "./routes/house"
 import { errorHandlers } from "./middlewares/errorHandlers"
 import { authenticateUser } from "./middlewares/authentication"
+import meRouter from "./routes/me"
 
 const app = express()
 
@@ -13,6 +14,7 @@ app.use(cookieParser())
 app.use(express.json())
 
 app.use('/users', userRouter)
+app.use('/me', authenticateUser, meRouter)
 app.use('/houses', authenticateUser, accomodationRouter)
 
 app.use(errorHandlers)
