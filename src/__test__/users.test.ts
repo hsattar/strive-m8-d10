@@ -45,11 +45,12 @@ describe('Testing all the user routes', () => {
         expect(response.body.password).not.toBeDefined()
     })
 
-    it('Should be able to let a user log in with their details', async () => {
-        const response = await request.post('/users/login').send(validLogin)
-        expect(response.status).toBe(200)
-        expect(response.body.accessToken).toBeDefined()
-        expect(response.body.refreshToken).toBeDefined()
-    })
+    // it('Should be able to let a user log in with their details', async () => {
+    //     const response = await request.post('/users/login').send(validLogin)
+    //     expect(response.status).toBe(200)
+    //     // expect(response.body.accessToken).toBeDefined()
+    //     // expect(response.body.refreshToken).toBeDefined()
+    //     expect(response.body).toBe('Tokens Sent')
+    // })
 
 })
