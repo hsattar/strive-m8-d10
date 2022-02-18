@@ -1,11 +1,21 @@
-import { ErrorRequestHandler } from "express";
+import { ErrorRequestHandler } from "express"
 
 export const errorHandlers: ErrorRequestHandler = (err, req, res, next) => {
-    switch (err.status) {
-        case 400: return res.status(400).send(err)
-        case 401: return res.status(401).send(err)
-        case 403: return res.status(403).send(err)
-        case 404: return res.status(404).send(err)
-        default: return res.status(500).send('Server Error')
+    console.log('THE ERROR', err.name)
+    switch(err.name) {
+        case 'ValidationError': 
+        case 'BadRequestError': 
+            return res.status(400).send(err)
+        case 'UnauthorizedError':
+        case 'JsonWebTokenError':
+        case 'TokenExpiredError':
+            return res.status(401).send(err.message)
+        case 'ForbiddenError': 
+            return res.status(403).send(err.message)
+        case 'NotFoundError': 
+            return res.status(404).send(err) 
+        default: 
+            console.log(err);
+            return res.status(500).send('Server Error')
     }
 }
