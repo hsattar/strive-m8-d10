@@ -19,7 +19,11 @@ describe('Testing all the user routes', () => {
     })
 
     afterAll(done => {
-        mongoose.connection.close().then(done())
+        mongoose.connection.dropDatabase()
+            .then(() => {
+                return mongoose.connection.close()
+            })
+            .then(done())
     })
 
     const validUserRegistration = {
@@ -29,11 +33,23 @@ describe('Testing all the user routes', () => {
         password: 'hasan'
     }
 
+    const validLogin = {
+        email: 'hasan@sattar.com',
+        password: 'hasan'
+    }
+
     it('Should create a new user with a hashed password but not returned', async () => {
         const response = await request.post('/users').send(validUserRegistration)
         expect(response.status).toBe(201)
         expect(response.body._id).toBeDefined()
         expect(response.body.password).not.toBeDefined()
+    })
+
+    it('Should be able to let a user log in with their details', async () => {
+        const response = await request.post('/users/login').send(validLogin)
+        expect(response.status).toBe(200)
+        expect(response.body.accessToken).toBeDefined()
+        expect(response.body.refreshToken).toBeDefined()
     })
 
 })

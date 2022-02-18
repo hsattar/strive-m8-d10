@@ -1,14 +1,14 @@
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
-import { IUser } from '../types/userInterface'
+import { IUser, UserModel } from '../types/userInterface'
 
 const { Schema, model } = mongoose
 
-const userSchema = new Schema<IUser>({
+const userSchema = new Schema<IUser, UserModel>({
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true, unique: true}
+    email: { type: String, required: true },
+    password: { type: String, required: true }
 })
 
 userSchema.pre('save', async function(next) {
@@ -28,4 +28,12 @@ userSchema.methods.toJSON = function() {
     return userObject
 }
 
-export default model<IUser>('User', userSchema)
+userSchema.statics.authenticate = async function(email, password) {
+    const user = await this.findOne({ email })
+    if (!user) return null
+    const validCredentials = await bcrypt.compare(password, user.password)
+    if (!validCredentials) return null
+    return user
+}
+
+export default model<IUser, UserModel>('User', userSchema)
